@@ -1,0 +1,1 @@
+Use `flask run` to run the app.
