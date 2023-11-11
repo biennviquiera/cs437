@@ -1,9 +1,11 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey
 from sqlite3 import connect
 from contextlib import closing
 from sys import stderr
+import jinja2
+# from flask import Flask, flash, redirect, render_template, request, session, make_response, url_for
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
@@ -37,26 +39,6 @@ product_table = Table('product', metadata,
     Column('category_id', String, ForeignKey('seasonality.category_id')),
     Column('brand_id', String, ForeignKey('brand.brand_id'))
 )
-# class Product(db.Model):
-#     product_id: Mapped[int] = mapped_column(Integer, primary_key=True)
-#     condition_id: db.Column(Integer, ForeignKey('condition.condition_id'))
-#     category_id: db.Column(Integer, ForeignKey('seasonality.category_id'))
-#     brand_id: db.Column(Integer, ForeignKey('brand.brand_id'))
-
-# class Condition(db.Model):
-#     condition_id: db.Column(Integer, db.ForeignKey(Product.condiiton_id), primary_key=True)
-#     discount_score: db.Column(Integer)
-
-# class Seasonality(db.Model):
-#     category_id: db.Column(Integer, db.ForeignKey(Product.category_id), primary_key=True)
-#     season: db.Column(String)
-#     score: db.Column(Integer)
-
-# class Brand(db.Model):
-#     brand_id = db.Column(db.Integer, db.ForeignKey(Product.brand_id), primary_key=True)
-#     tier = db.Column(db.String(80))
-#     trendy_score = db.Column(db.Integer)
-
 
 _DATABASE_URL = 'project.db'  
 def query_db(query, args):
@@ -86,6 +68,7 @@ def print_sample_data():
 
 
 @app.route("/")
+@app.route("/index")
 def hello_world():
     metadata.create_all(engine)
     insert_sample_data()
