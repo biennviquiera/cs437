@@ -63,7 +63,7 @@ def print_sample_data():
     #         products = cursor.fetchall()
     query_str = "SELECT * from product"
     products = query_db(query_str, [])
-    print(products)
+    # print(products)
     return products
 
 
@@ -74,4 +74,4 @@ def hello_world():
     insert_sample_data()
     products = print_sample_data()
     # return f"<p>Hello, World!</p>"
-    return render_template("index.html", products = products)
+    return render_template("index.html", products = products[:20])
