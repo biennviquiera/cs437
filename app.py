@@ -45,7 +45,8 @@ product_table = Table('product', metadata,
     Column('product_id', Integer, primary_key=True),
     Column('condition_id', Integer, ForeignKey('condition.condition_id')),
     Column('category_id', String, ForeignKey('seasonality.category_id')),
-    Column('brand_id', String, ForeignKey('brand.brand_id'))
+    Column('brand_id', String, ForeignKey('brand.brand_id')),
+    Column('price', Integer)
 )
 
 class Form(FlaskForm):
