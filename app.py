@@ -81,12 +81,28 @@ def print_sample_data():
     return products
 
 
-@app.route("/")
-@app.route("/index")
+@app.route("/", methods=["GET", "POST"])
+@app.route("/index", methods=["GET", "POST"])
 def hello_world():
     metadata.create_all(engine)
     insert_sample_data()
     products = print_sample_data()
     form = Form()
+
+    if form.validate_on_submit():
+        # Retrieve input data from the form
+        item_name = form.item_name.data
+        condition = form.condition.data
+        brand = form.brand.data
+        print(item_name, condition, brand)
+
+        # Construct an SQL query to search for matching rows
+        query_str = "SELECT * FROM product WHERE condition_id = ? AND brand_id = ?"
+        args = (condition, brand)
+
+        # Get average price for matching rows
+
+        # Execute the SQL query using the query_db function
+        products = query_db(query_str, args)
     # return f"<p>Hello, World!</p>"
     return render_template("index.html", products = products[:20],form = form)
