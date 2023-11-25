@@ -88,6 +88,7 @@ def hello_world():
     insert_sample_data()
     products = print_sample_data()
     form = Form()
+    avg_price = 0
 
     if form.validate_on_submit():
         # Retrieve input data from the form
@@ -96,13 +97,16 @@ def hello_world():
         brand = form.brand.data
         print(item_name, condition, brand)
 
-        # Construct an SQL query to search for matching rows
+        # Construct an SQL query to search for matching rows, get avg
         query_str = "SELECT * FROM product WHERE condition_id = ? AND brand_id = ?"
         args = (condition, brand)
 
-        # Get average price for matching rows
-
         # Execute the SQL query using the query_db function
         products = query_db(query_str, args)
+
+        # SQL query to get averages
+        query_str = "SELECT AVG(price) AS average_price FROM product WHERE condition_id = ? AND brand_id = ?;"
+        avg_price = query_db(query_str, args)
+
     # return f"<p>Hello, World!</p>"
-    return render_template("index.html", products = products[:20],form = form)
+    return render_template("index.html", products = products[:20], form = form, avg_price = avg_price)

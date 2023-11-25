@@ -15,6 +15,11 @@
     </p>
     <p>{{ form.submit() }}</p>
 </form>
+
+{% if avg_price != 0 %}
+    <p>Average Price: {{ avg_price }}</p>
+{% endif %}
+
 {% for product in products %}
 <p>{{ product }}</p>
 {% endfor %}
