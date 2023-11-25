@@ -1,15 +1,23 @@
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import DataRequired
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, ForeignKey
 from sqlite3 import connect
 from contextlib import closing
 from sys import stderr
+import os
 import jinja2
 # from flask import Flask, flash, redirect, render_template, request, session, make_response, url_for
+
+class Config(object):
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config.from_object(Config)
 
 engine = create_engine('sqlite:///project.db')
 db = SQLAlchemy(app)
@@ -39,6 +47,12 @@ product_table = Table('product', metadata,
     Column('category_id', String, ForeignKey('seasonality.category_id')),
     Column('brand_id', String, ForeignKey('brand.brand_id'))
 )
+
+class Form(FlaskForm):
+    item_name = StringField('Item Name', validators=[DataRequired()])
+    condition = StringField('Condition', validators=[DataRequired()])
+    brand = StringField('Brand', validators=[DataRequired()])
+    submit = SubmitField('Submit')
 
 _DATABASE_URL = 'project.db'  
 def query_db(query, args):
@@ -73,5 +87,6 @@ def hello_world():
     metadata.create_all(engine)
     insert_sample_data()
     products = print_sample_data()
+    form = Form()
     # return f"<p>Hello, World!</p>"
-    return render_template("index.html", products = products[:20])
+    return render_template("index.html", products = products[:20],form = form)

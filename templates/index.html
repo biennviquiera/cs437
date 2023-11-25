@@ -1,4 +1,20 @@
-<p>Hello, World!</p>
+<p>Welcome!</p>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.item_name.label }}<br>
+        {{ form.item_name(size=32) }}
+    </p>
+    <p>
+        {{ form.condition.label }}<br>
+        {{ form.condition(size=32) }}
+    </p>
+    <p>
+        {{ form.brand.label }}<br>
+        {{ form.brand(size=32) }}
+    </p>
+    <p>{{ form.submit() }}</p>
+</form>
 {% for product in products %}
 <p>{{ product }}</p>
 {% endfor %}
