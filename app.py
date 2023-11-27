@@ -31,8 +31,7 @@ condition_table = Table('condition', metadata,
 
 seasonality_table = Table('seasonality', metadata,
     Column('category_id', String, primary_key=True),
-    Column('season_id', Integer),
-    Column('score', Integer)
+    Column('season', String)
 )
 
 brand_table = Table('brand', metadata,
