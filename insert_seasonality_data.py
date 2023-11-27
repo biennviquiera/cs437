@@ -22,7 +22,7 @@ with open('seasonality.csv', newline='') as csvfile:
 # Standart method of Pandas to deliver data from DataFrame to PastgresQL
 try:
     with engine.begin() as connection:
-        df.to_sql('product', con=connection, if_exists='replace', index=False)
+        df.to_sql('seasonality', con=connection, if_exists='replace', index=False)
         print('Done, ok!')
 except Exception as e:
         print(e)
