@@ -19,7 +19,13 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config.from_object(Config)
 
-engine = create_engine('sqlite:///project.db')
+try:
+    # engine = create_engine(
+    #     'postgresql://username:password@localhost:5432/name_of_base')
+    engine = create_engine("sqlite:///project.db", echo=True)
+except:
+    print("Can't create 'engine")
+
 db = SQLAlchemy(app)
 metadata = MetaData()
 
