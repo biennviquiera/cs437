@@ -161,6 +161,9 @@
 {% if in_season %}
     <p>Items of this category are currently in season!&#128516; Consider pricing at the higher end of the above range. </p>
 {% endif %}
+{% if brand_popularity %}
+    <p>This brand is known by {{ brand_fame }} of people and well-liked by {{ brand_popularity }}. </p>
+{% endif %} 
 {% if out_season %}
     <p> Items of this category are currently out of season &#128533; Consider pricing at the lower end of the above range. </p>
 {% endif %}

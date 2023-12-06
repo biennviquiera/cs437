@@ -172,6 +172,18 @@ def index():
         category_season_query = "SELECT season_id from seasonality WHERE category_id = ?"
         curr_season_out = query_db(category_season_query, [category])
 
+        query_str = "SELECT fame_score, popularity_score FROM product NATURAL JOIN brand"
+        if conditions:
+            query_str += " WHERE " + " AND ".join(conditions)
+        print(query_str)
+        brand_scores = query_db(query_str, args)
+        if brand_scores and brand_scores[0][0] and brand_scores[0][1] is not None:
+            brand_fame = "{}%".format(brand_scores[0][0])
+            brand_popularity = "{}%".format(brand_scores[0][1])
+        else:
+            brand_fame = None
+            brand_popularity = None
+
         in_season = False
         out_of_season = False
         if curr_season_out and len(curr_season_out) > 0:
@@ -179,7 +191,10 @@ def index():
             if in_season == False:
                 if (curr_season == "winter" and curr_season_out[0][0] == "summer") or (curr_season == "summer" and curr_season_out[0][0] == "winter"):
                     out_of_season = True
-        return render_template("index.html", products=products_display, form=form, avg_price=avg_price, min_price=min_price, max_price=max_price, in_season = in_season, out_season = out_of_season, item_name = item_name)
+        return render_template("index.html", products=products_display, form=form, 
+                               avg_price=avg_price, min_price=min_price, 
+                               max_price=max_price, in_season = in_season, out_season = out_of_season, 
+                               item_name = item_name, brand_fame=brand_fame, brand_popularity=brand_popularity)
 
 
     return render_template("index.html", products=[], form=form, avg_price=avg_price, min_price=min_price, max_price=max_price)
