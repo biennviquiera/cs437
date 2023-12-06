@@ -1,17 +1,62 @@
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <style>
+        .ui-autocomplete {
+          max-height: 100px;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+        * html .ui-autocomplete {
+          height: 100px;
+        }
+        </style>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <title>Price Predictor</title>
+    <script>
+        $(function() {
+            $("#category").autocomplete({
+                source: function(request, response) {
+                    $.getJSON("/autocomplete", { q: request.term }, function(data) {
+                        console.log("Response data:", data);  // Log the entire data object
+                        response($.map(data, function(item) {
+                            return {
+                                label: item.label,
+                                value: item.value
+                            };
+                        }));
+                    });
+                },
+                minLength: 2,
+                max: 5,
+                scroll: true,
+                select: function(event, ui) {
+                    $("#category").val(ui.item.value);
+                }
+            });
+        });
+    </script>
+</head>
+
+
 <p>Welcome!</p>
 <form action="" method="post">
     {{ form.hidden_tag() }}
     <p>
         {{ form.item_name.label }}<br>
-        {{ form.item_name(size=32) }}
+        {{ form.item_name(size=32, id="item_name") }}
+    </p>
+    <p>
+        {{ form.category.label }}<br>
+        {{ form.category(size=32, id="category") }}
     </p>
     <p>
         {{ form.condition.label }}<br>
-        {{ form.condition(size=32) }}
+        {{ form.condition(size=32, id="condition") }}
     </p>
     <p>
         {{ form.brand.label }}<br>
-        {{ form.brand(size=32) }}
+        {{ form.brand(size=32, id="brand") }}
     </p>
     <p>{{ form.submit() }}</p>
 </form>

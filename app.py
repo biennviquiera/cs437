@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
@@ -56,6 +56,7 @@ product_table = Table('product', metadata,
 
 class Form(FlaskForm):
     item_name = StringField('Item Name', validators=[DataRequired()])
+    category = StringField('Category', validators=[DataRequired()])
     condition = StringField('Condition', validators=[DataRequired()])
     brand = StringField('Brand', validators=[DataRequired()])
     submit = SubmitField('Submit')
@@ -116,3 +117,27 @@ def hello_world():
 
     # return f"<p>Hello, World!</p>"
     return render_template("index.html", products = products[:20], form = form, avg_price = avg_price)
+@app.route("/autocomplete")
+def autocomplete():
+    search = request.args.get('q')
+    suggestions = []
+
+    _DATABASE_URL = 'project.db'
+
+    try:
+        with connect(_DATABASE_URL, isolation_level=None, uri=True) as conn:
+            # Prepare the SQL query. Use parameterized queries to prevent SQL injection
+            query = "SELECT DISTINCT category_id FROM product WHERE category_id LIKE ? LIMIT 20"
+
+            # Execute the query with the search term
+            with closing(conn.cursor()) as cursor:
+                cursor.execute(query, ('%' + search + '%',))
+                result = cursor.fetchall()
+
+            # Process the result and prepare the suggestions list
+            suggestions = [{"label": row[0], "value": row[0]} for row in result]
+    
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    # Return the suggestions as JSON
+    return jsonify(suggestions)
