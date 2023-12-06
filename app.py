@@ -179,7 +179,7 @@ def index():
             if in_season == False:
                 if (curr_season == "winter" and curr_season_out[0][0] == "summer") or (curr_season == "summer" and curr_season_out[0][0] == "winter"):
                     out_of_season = True
-        return render_template("index.html", products=products_display, form=form, avg_price=avg_price, min_price=min_price, max_price=max_price, in_season = in_season, out_season = out_of_season)
+        return render_template("index.html", products=products_display, form=form, avg_price=avg_price, min_price=min_price, max_price=max_price, in_season = in_season, out_season = out_of_season, item_name = item_name)
 
 
     return render_template("index.html", products=products[:20], form=form, avg_price=avg_price, min_price=min_price, max_price=max_price)

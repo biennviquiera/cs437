@@ -17,8 +17,8 @@ with open('train.tsv', newline='') as csvfile:
     # reader = csv.DictReader(csvfile, sep='\t')
     columns = ['train_id', 'name', 'item_condition_id', 'category_name','brand_name','price','shipping','item_description']
     df = pd.DataFrame(data=reader, columns=columns)
-    df = df.filter(items=['train_id', 'item_condition_id','category_name','brand_name','price'])
-    df = df.rename(columns={"train_id": "product_id", "item_condition_id": "condition_id", "category_name": "category_id", "brand_name":"brand_id",'price':'price'})
+    df = df.filter(items=['train_id', 'name', 'item_condition_id','category_name','brand_name','price'])
+    df = df.rename(columns={"train_id": "product_id", "name": "name", "item_condition_id": "condition_id", "category_name": "category_id", "brand_name":"brand_id",'price':'price'})
     
 
 # Standart method of Pandas to deliver data from DataFrame to PastgresQL

@@ -142,6 +142,9 @@
 </form>
 </div>
 <div class="output">
+{% if item_name %}
+    <p><strong>{{item_name}}</strong></p>
+{% endif %}
 {% if avg_price != 0 %}
     <p>Average Price: {{ avg_price }}</p>
 {% endif %}
@@ -167,6 +170,7 @@
 <table>
     <thead>
         <tr>
+            <th>Item Name</th>
             <th>Condition</th>
             <th>Category</th>
             <th>Brand</th>
@@ -176,20 +180,21 @@
     <tbody>
         {% for product in products %}
         <tr>
+            <td>{{product[1]}}</td>
             <td>
-                {% if product[1] == 1 %}
+                {% if product[2] == 1 %}
                 Fair
-                {% elif product[1] == 2 %}
+                {% elif product[2] == 2 %}
                     Good
-                {% elif product[1] == 3 %}
+                {% elif product[2] == 3 %}
                     Excellent
                 {% else %}
                     Unknown
                 {% endif %}
             </td> <!-- Condition -->
-            <td>{{ product[2] }}</td> <!-- Category -->
-            <td>{{ product[3] }}</td> <!-- Brand -->
-            <td>${{ product[4] }}</td> <!-- Price -->
+            <td>{{ product[3] }}</td> <!-- Category -->
+            <td>{{ product[4] }}</td> <!-- Brand -->
+            <td>${{ product[5] }}</td> <!-- Price -->
         </tr>
         {% endfor %}
     </tbody>
