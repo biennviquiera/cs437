@@ -43,8 +43,8 @@ seasonality_table = Table('seasonality', metadata,
 
 brand_table = Table('brand', metadata,
     Column('brand_id', String, primary_key=True),
-    Column('tier', Integer),
-    Column('trendy_score', Integer)
+    Column('fame_score', Integer),
+    Column('popularity_score', Integer)
 )
 
 product_table = Table('product', metadata,
@@ -166,7 +166,7 @@ def index():
             max_price = "$0.00"
         
         if products is not None and len(products) > 0:
-            products_display = products[:20]
+            products_display = products[:50]
         else:
             products_display = []
         category_season_query = "SELECT season_id from seasonality WHERE category_id = ?"
@@ -182,7 +182,7 @@ def index():
         return render_template("index.html", products=products_display, form=form, avg_price=avg_price, min_price=min_price, max_price=max_price, in_season = in_season, out_season = out_of_season, item_name = item_name)
 
 
-    return render_template("index.html", products=products[:20], form=form, avg_price=avg_price, min_price=min_price, max_price=max_price)
+    return render_template("index.html", products=[], form=form, avg_price=avg_price, min_price=min_price, max_price=max_price)
 
 @app.route("/autocomplete")
 def autocomplete():
