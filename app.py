@@ -131,10 +131,17 @@ def index():
             avg_price = "${:,.2f}".format(avg_price_result[0][0])
         else:
             avg_price = "$0.00"
-        
+        if products is not None and len(products) > 0:
+            products_display = products[:20]
+        else:
+            products_display = []
         category_season_query = "SELECT season_id from seasonality WHERE category_id = ?"
         curr_season_out = query_db(category_season_query, [category])
-        return render_template("index.html", products=products[:20], form=form, avg_price=avg_price, in_season = (CURR_SEASON == curr_season_out[0][0]))
+
+        in_season = False
+        if curr_season_out and len(curr_season_out) > 0:
+            in_season = (CURR_SEASON == curr_season_out[0][0])
+        return render_template("index.html", products=products_display, form=form, avg_price=avg_price, in_season = in_season)
 
 
     return render_template("index.html", products=products[:20], form=form, avg_price=avg_price)
@@ -142,16 +149,23 @@ def index():
 @app.route("/autocomplete")
 def autocomplete():
     search = request.args.get('q')
+    field = request.args.get('field')
+    valid_fields = {
+        'category': 'category_id',
+        'condition': 'condition_id',
+        'brand': 'brand_id'
+    }
+    column = valid_fields[field]
+    if field not in valid_fields:
+        return jsonify([])
     suggestions = []
 
     _DATABASE_URL = 'project.db'
 
     try:
         with connect(_DATABASE_URL, isolation_level=None, uri=True) as conn:
-            # Prepare the SQL query. Use parameterized queries to prevent SQL injection
-            query = "SELECT DISTINCT category_id FROM product WHERE category_id LIKE ? LIMIT 20"
+            query = f"SELECT DISTINCT {column} FROM product WHERE {column} LIKE ? LIMIT 20"
 
-            # Execute the query with the search term
             with closing(conn.cursor()) as cursor:
                 cursor.execute(query, ('%' + search + '%',))
                 result = cursor.fetchall()
@@ -162,4 +176,10 @@ def autocomplete():
     except Exception as e:
         print(f"An error occurred: {e}")
     # Return the suggestions as JSON
+    return jsonify(suggestions)
+
+@app.route("/autocomplete/condition")
+def autocomplete_condition():
+    condition_mapping = {1: "Fair", 2: "Good", 3: "Excellent"}
+    suggestions = [{"label": condition_mapping.get(key), "value": key} for key in condition_mapping]
     return jsonify(suggestions)

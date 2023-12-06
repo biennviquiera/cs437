@@ -28,11 +28,11 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
     <title>Price Predictor</title>
     <script>
-        var validSelection = false; // Flag to track if a valid selection was made
+        var validSelection = false;
         $(function() {
             $("#category").autocomplete({
                 source: function(request, response) {
-                    $.getJSON("/autocomplete", { q: request.term }, function(data) {
+                    $.getJSON("/autocomplete", { q: request.term, field: "category" }, function(data) {
                         response($.map(data, function(item) {
                             return {
                                 label: item.label,
@@ -44,10 +44,10 @@
                 minLength: 2,
                 select: function(event, ui) {
                     $("#category").val(ui.item.value);
-                    validSelection = true; // Set the flag to true when a selection is made
+                    validSelection = true; 
                 }
             });
-            // activate if you want to strictly accept autocomplete suggestions
+            // uncomment if you want to strictly accept autocomplete suggestions
             // $("form").on("submit", function(event) {
             //     if (!validSelection) {
             //         alert("Please select an option from the autocomplete suggestions.");
@@ -59,6 +59,36 @@
             // $("#category").on("input", function() {
             //     validSelection = false;
             // });
+        });
+        $(function() {
+            $("#condition-text").autocomplete({
+                source: "/autocomplete/condition",
+                minLength: 0,
+                select: function(event, ui) {
+                    $("#condition-text").val(ui.item.label);
+                    $("#condition").val(ui.item.value);
+                    return false;
+                }
+            });
+        });
+        $(function() {
+            $("#brand").autocomplete({
+                source: function(request, response) {
+                    $.getJSON("/autocomplete", { q: request.term, field: "brand" }, function(data) {
+                        response($.map(data, function(item) {
+                            return {
+                                label: item.label,
+                                value: item.value
+                            };
+                        }));
+                    });
+                },
+                minLength: 2,
+                select: function(event, ui) {
+                    $("#brand").val(ui.item.value);
+                    validSelection = true; // Set the flag to true when a selection is made
+                }
+            });
         });
     </script>
 
@@ -78,8 +108,8 @@
     </p>
     <p>
         {{ form.condition.label }}<br>
-        {{ form.condition(size=32, id="condition") }}
-    </p>
+        {{ form.condition(size=32, id="condition", type="hidden") }} <!-- used to hold integer value of condition-->
+        <input type="text" size="32" id="condition-text">    </p>
     <p>
         {{ form.brand.label }}<br>
         {{ form.brand(size=32, id="brand") }}
