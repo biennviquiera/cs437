@@ -9,6 +9,7 @@ from contextlib import closing
 from sys import stderr
 import os
 import jinja2
+from datetime import date
 # from flask import Flask, flash, redirect, render_template, request, session, make_response, url_for
 
 class Config(object):
@@ -18,7 +19,6 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config.from_object(Config)
-CURR_SEASON = "winter"
 
 try:
     # engine = create_engine(
@@ -88,6 +88,19 @@ def print_sample_data():
     # print(products)
     return products
 
+def get_season(north_hemisphere: bool = True) -> str:
+    today = date.today()
+    now = (today.month, today.day)
+    if (3, 1) <= now < (6, 1):
+        season = 'spring' if north_hemisphere else 'fall'
+    elif (6, 1) <= now < (9, 1):
+        season = 'summer' if north_hemisphere else 'winter'
+    elif (9, 1) <= now < (12, 1):
+        season = 'fall' if north_hemisphere else 'spring'
+    else:
+        season = 'winter' if north_hemisphere else 'summer'
+    return season
+
 
 @app.route("/", methods=["GET", "POST"])
 @app.route("/index", methods=["GET", "POST"])
@@ -97,7 +110,9 @@ def index():
     products = print_sample_data()
     form = Form()
     avg_price = 0
-
+    max_price = 0
+    min_price = 0
+    curr_season = get_season()
     if form.validate_on_submit():
         item_name = form.item_name.data
         condition = form.condition.data
@@ -131,6 +146,25 @@ def index():
             avg_price = "${:,.2f}".format(avg_price_result[0][0])
         else:
             avg_price = "$0.00"
+        
+        query_str = "SELECT MIN(price) AS min_price FROM product"
+        if conditions:
+            query_str += " WHERE " + " AND ".join(conditions)
+        min_price_result = query_db(query_str, args)
+        if min_price_result and min_price_result[0][0] is not None:
+            min_price = "${:,.2f}".format(min_price_result[0][0])
+        else:
+            min_price = "$0.00"
+        
+        query_str = "SELECT MAX(price) AS max_price FROM product"
+        if conditions:
+            query_str += " WHERE " + " AND ".join(conditions)
+        max_price_result = query_db(query_str, args)
+        if max_price_result and max_price_result[0][0] is not None:
+            max_price = "${:,.2f}".format(max_price_result[0][0])
+        else:
+            max_price = "$0.00"
+        
         if products is not None and len(products) > 0:
             products_display = products[:20]
         else:
@@ -139,12 +173,16 @@ def index():
         curr_season_out = query_db(category_season_query, [category])
 
         in_season = False
+        out_of_season = False
         if curr_season_out and len(curr_season_out) > 0:
-            in_season = (CURR_SEASON == curr_season_out[0][0])
-        return render_template("index.html", products=products_display, form=form, avg_price=avg_price, in_season = in_season)
+            in_season = (curr_season == curr_season_out[0][0])
+            if in_season == False:
+                if (curr_season == "winter" and curr_season_out[0][0] == "summer") or (curr_season == "summer" and curr_season_out[0][0] == "winter"):
+                    out_of_season = True
+        return render_template("index.html", products=products_display, form=form, avg_price=avg_price, min_price=min_price, max_price=max_price, in_season = in_season, out_season = out_of_season)
 
 
-    return render_template("index.html", products=products[:20], form=form, avg_price=avg_price)
+    return render_template("index.html", products=products[:20], form=form, avg_price=avg_price, min_price=min_price, max_price=max_price)
 
 @app.route("/autocomplete")
 def autocomplete():

@@ -24,6 +24,27 @@
         th {
             background-color: #f2f2f2;
         }
+        .title {
+            width:fit-content;
+            border: 1px solid black;
+            background-color: #e4e4d9;
+            padding: 10px;
+            margin: 10px;
+        }
+        .form_box {
+            width:fit-content;
+            border: 1px solid black;
+            padding: 10px;
+            margin: 10px;
+        }
+        .output {
+            width:fit-content;
+            text-align: center;
+            border: 1px solid black;
+            background-color: #e4e4d9;
+            padding: 10px;
+            margin: 10px;
+        }
         </style>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
     <title>Price Predictor</title>
@@ -94,8 +115,11 @@
 
 </head>
 
-
-<p>Welcome!</p>
+<div class="title">
+<p style="font-size:30px; margin-bottom: 0;"> Welcome! </p>
+<p> Input information about your item below to receive information on prices of similar items sold in the past. </p>
+</div>
+<div class="form_box">
 <form action="" method="post">
     {{ form.hidden_tag() }}
     <p>
@@ -116,13 +140,25 @@
     </p>
     <p>{{ form.submit() }}</p>
 </form>
-
+</div>
+<div class="output">
 {% if avg_price != 0 %}
     <p>Average Price: {{ avg_price }}</p>
 {% endif %}
-{% if in_season %}
-    <p>Items of this category are in season!</p>
+{% if min_price != 0 %}
+    <p>The lowest price items of this category have sold for is {{ min_price }}.</p>
 {% endif %}
+{% if max_price != 0 %}
+    <p>The highest price items of this category have sold for is {{ max_price }}.</p>
+{% endif %}
+{% if in_season %}
+    <p>Items of this category are currently in season!&#128516; Consider pricing at the higher end of the above range. </p>
+{% endif %}
+{% if out_season %}
+    <p> Items of this category are currently out of season &#128533; Consider pricing at the lower end of the above range. </p>
+{% endif %}
+</div>
+<p> Examples of previously sold items: </p>
 
 <!-- {% for product in products %}
 <p>{{ product }}</p>
