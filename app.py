@@ -55,10 +55,10 @@ product_table = Table('product', metadata,
 )
 
 class Form(FlaskForm):
-    item_name = StringField('Item Name', validators=[DataRequired()])
-    category = StringField('Category', validators=[DataRequired()])
-    condition = StringField('Condition', validators=[DataRequired()])
-    brand = StringField('Brand', validators=[DataRequired()])
+    item_name = StringField('Item Name')
+    category = StringField('Category')
+    condition = StringField('Condition')
+    brand = StringField('Brand')
     submit = SubmitField('Submit')
 
 _DATABASE_URL = 'project.db'  
@@ -90,7 +90,7 @@ def print_sample_data():
 
 @app.route("/", methods=["GET", "POST"])
 @app.route("/index", methods=["GET", "POST"])
-def hello_world():
+def index():
     metadata.create_all(engine)
     insert_sample_data()
     products = print_sample_data()
@@ -98,25 +98,41 @@ def hello_world():
     avg_price = 0
 
     if form.validate_on_submit():
-        # Retrieve input data from the form
         item_name = form.item_name.data
         condition = form.condition.data
+        category = form.category.data
         brand = form.brand.data
         print(item_name, condition, brand)
 
-        # Construct an SQL query to search for matching rows, get avg
-        query_str = "SELECT * FROM product WHERE condition_id = ? AND brand_id = ?"
-        args = (condition, brand)
+        conditions = []
+        args = []
+        # Build SQL Query based on provided fields
+        if condition:
+            conditions.append("condition_id = ?")
+            args.append(condition)
+        if brand:
+            conditions.append("brand_id = ?")
+            args.append(brand)
+        if category:
+            conditions.append("category_id = ?")
+            args.append(category)
 
-        # Execute the SQL query using the query_db function
+        query_str = "SELECT * FROM product"
+        if conditions:
+            query_str += " WHERE " + " AND ".join(conditions)
         products = query_db(query_str, args)
 
-        # SQL query to get averages
-        query_str = "SELECT AVG(price) AS average_price FROM product WHERE condition_id = ? AND brand_id = ?;"
-        avg_price = query_db(query_str, args)
+        query_str = "SELECT AVG(price) AS average_price FROM product"
+        if conditions:
+            query_str += " WHERE " + " AND ".join(conditions)
+        avg_price_result = query_db(query_str, args)
+        if avg_price_result and avg_price_result[0][0] is not None:
+            avg_price = "${:,.2f}".format(avg_price_result[0][0])
+        else:
+            avg_price = "$0.00"
 
-    # return f"<p>Hello, World!</p>"
-    return render_template("index.html", products = products[:20], form = form, avg_price = avg_price)
+    return render_template("index.html", products=products[:20], form=form, avg_price=avg_price)
+
 @app.route("/autocomplete")
 def autocomplete():
     search = request.args.get('q')
