@@ -90,6 +90,9 @@
 {% if avg_price != 0 %}
     <p>Average Price: {{ avg_price }}</p>
 {% endif %}
+{% if in_season %}
+    <p>Items of this category are in season!</p>
+{% endif %}
 
 <!-- {% for product in products %}
 <p>{{ product }}</p>

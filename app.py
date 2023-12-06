@@ -18,6 +18,7 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config.from_object(Config)
+CURR_SEASON = "winter"
 
 try:
     # engine = create_engine(
@@ -130,6 +131,11 @@ def index():
             avg_price = "${:,.2f}".format(avg_price_result[0][0])
         else:
             avg_price = "$0.00"
+        
+        category_season_query = "SELECT season_id from seasonality WHERE category_id = ?"
+        curr_season_out = query_db(category_season_query, [category])
+        return render_template("index.html", products=products[:20], form=form, avg_price=avg_price, in_season = (CURR_SEASON == curr_season_out[0][0]))
+
 
     return render_template("index.html", products=products[:20], form=form, avg_price=avg_price)
 
