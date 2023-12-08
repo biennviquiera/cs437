@@ -10,7 +10,6 @@ from sys import stderr
 import os
 import jinja2
 from datetime import date
-# from flask import Flask, flash, redirect, render_template, request, session, make_response, url_for
 
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
@@ -21,8 +20,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config.from_object(Config)
 
 try:
-    # engine = create_engine(
-    #     'postgresql://username:password@localhost:5432/name_of_base')
     engine = create_engine("sqlite:///project.db", echo=True)
 except:
     print("Can't create 'engine")
@@ -73,20 +70,6 @@ def query_db(query, args):
     except Exception as ex:
         print(ex, file=stderr)
         return None
-        
-def insert_sample_data():
-    query_db("INSERT INTO product VALUES(1,1,1,1)", [])
-
-def print_sample_data():
-    # with engine.connect() as connection:
-    # with connect('project.db') as conn:
-    #     with closing(conn.cursor()) as cursor:
-    #         cursor.execute("SELECT * from product")
-    #         products = cursor.fetchall()
-    query_str = "SELECT * from product"
-    products = query_db(query_str, [])
-    # print(products)
-    return products
 
 def get_season(north_hemisphere: bool = True) -> str:
     today = date.today()
@@ -106,8 +89,7 @@ def get_season(north_hemisphere: bool = True) -> str:
 @app.route("/index", methods=["GET", "POST"])
 def index():
     metadata.create_all(engine)
-    insert_sample_data()
-    products = print_sample_data()
+    products = []
     form = Form()
     avg_price = 0
     max_price = 0
@@ -223,7 +205,6 @@ def autocomplete():
                 cursor.execute(query, ('%' + search + '%',))
                 result = cursor.fetchall()
 
-            # Process the result and prepare the suggestions list
             suggestions = [{"label": row[0], "value": row[0]} for row in result]
     
     except Exception as e:
