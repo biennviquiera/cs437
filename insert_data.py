@@ -10,7 +10,7 @@ def clean_data(df):
     df['name'] = df['name'].apply(lambda s: emoji.replace_emoji(s, ''))
     #remove non alpha-numeric
     df['name'] = df.name.str.replace('[^a-zA-Z0-9]', '')
-    df['name'] = df['name'].apply(lambda s: normalize('NFKD', s).encode('ascii','ignore'))
+    df['name'] = df['name'].apply(lambda s: normalize('NFKD', s).encode('ascii','ignore').decode('ascii'))
     return df
 
 # Create engine to connect with DB
