@@ -4,8 +4,6 @@ from sqlalchemy import create_engine
 
 # Create engine to connect with DB
 try:
-    # engine = create_engine(
-    #     'postgresql://username:password@localhost:5432/name_of_base')
     engine = create_engine("sqlite:///project.db", echo=True)
 except:
     print("Can't create 'engine")

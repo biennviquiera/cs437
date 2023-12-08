@@ -4,8 +4,6 @@ from sqlalchemy import create_engine
 
 # Create engine to connect with DB
 try:
-    # engine = create_engine(
-    #     'postgresql://username:password@localhost:5432/name_of_base')
     engine = create_engine("sqlite:///project.db", echo=True)
 except:
     print("Can't create 'engine")
@@ -19,7 +17,7 @@ with open('seasonality.csv', newline='') as csvfile:
     df = df.rename(columns={"Category": "category_id", "Season": "season_id"})
     
 
-# Standart method of Pandas to deliver data from DataFrame to PastgresQL
+# Standard method of Pandas to deliver data from DataFrame to PastgresQL
 try:
     with engine.begin() as connection:
         df.to_sql('seasonality', con=connection, if_exists='replace', index=False)
