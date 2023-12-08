@@ -1,6 +1,24 @@
 import csv
 import pandas as pd
 from sqlalchemy import create_engine
+import emoji
+import re
+from unicodedata import normalize
+
+#apple airport
+#free ship
+def remove_non_ascii(text):
+    return_str = str(text)
+    re.sub(r'[^\x00-\x7F]', '', str(text))
+    return text
+
+def clean_data(df):
+    #remove emojis
+    df['name'] = df['name'].apply(lambda s: emoji.replace_emoji(s, ''))
+    #remove non alpha-numeric
+    df['name'] = df.name.str.replace('[^a-zA-Z0-9]', '')
+    df['name'] = df['name'].apply(lambda s: normalize('NFKD', s).encode('ascii','ignore'))
+    return df
 
 # Create engine to connect with DB
 try:
@@ -19,7 +37,7 @@ with open('train.tsv', newline='') as csvfile:
     df = pd.DataFrame(data=reader, columns=columns)
     df = df.filter(items=['train_id', 'name', 'item_condition_id','category_name','brand_name','price'])
     df = df.rename(columns={"train_id": "product_id", "name": "name", "item_condition_id": "condition_id", "category_name": "category_id", "brand_name":"brand_id",'price':'price'})
-    
+    df = clean_data(df)
 
 # Standart method of Pandas to deliver data from DataFrame to PastgresQL
 try:
