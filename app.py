@@ -28,11 +28,6 @@ db = SQLAlchemy(app)
 metadata = MetaData()
 
 # Define tables
-condition_table = Table('condition', metadata,
-    Column('condition_id', Integer, primary_key=True),
-    Column('discount_score', Integer)
-)
-
 seasonality_table = Table('seasonality', metadata,
     Column('category_id', String, primary_key=True),
     Column('season', String)
@@ -46,7 +41,7 @@ brand_table = Table('brand', metadata,
 
 product_table = Table('product', metadata,
     Column('product_id', Integer, primary_key=True),
-    Column('condition_id', Integer, ForeignKey('condition.condition_id')),
+    Column('condition_id', Integer),
     Column('category_id', String, ForeignKey('seasonality.category_id')),
     Column('brand_id', String, ForeignKey('brand.brand_id')),
     Column('price', Integer)
