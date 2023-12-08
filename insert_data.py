@@ -5,13 +5,6 @@ import emoji
 import re
 from unicodedata import normalize
 
-#apple airport
-#free ship
-def remove_non_ascii(text):
-    return_str = str(text)
-    re.sub(r'[^\x00-\x7F]', '', str(text))
-    return text
-
 def clean_data(df):
     #remove emojis
     df['name'] = df['name'].apply(lambda s: emoji.replace_emoji(s, ''))
